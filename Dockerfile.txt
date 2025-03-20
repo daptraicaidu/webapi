@@ -1,0 +1,18 @@
+# Sử dụng hình ảnh .NET SDK để build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+
+# Copy toàn bộ project vào container
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Sử dụng runtime image nhẹ hơn để chạy app
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/out ./
+
+# Chạy ứng dụng
+CMD ["dotnet", "MyWebAPI.dll"]
+
+# Mặc định chạy trên cổng 8080
+EXPOSE 8080
